@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from markdownify.templatetags.markdownify import markdownify
 
 
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
