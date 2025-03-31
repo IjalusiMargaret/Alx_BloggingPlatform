@@ -7,8 +7,11 @@ class Profile(models.Model):
     bio = models.TextField(blank=True)
     profile_picture = models.ImageField(upload_to='profiles/', blank=True)
 
+    def __str__(self):
+        return self.user.username
+
 class Category(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, unique=True)
 
     def __str__(self):
         return self.name
@@ -19,7 +22,7 @@ class Post(models.Model):
         ('published', 'Published'),
     )
     title = models.CharField(max_length=200)
-    slug = models.SlugField(unique=True)  # <-- move slug here to Post
+    slug = models.SlugField(unique=True)  
     content = models.TextField()
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
@@ -33,22 +36,30 @@ class Post(models.Model):
 
 class Comment(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
-    user = models.ForeignKey(User, on_delete=models.CASCADE)  # Pick user or rename to 'author'
+    user = models.ForeignKey(User, on_delete=models.CASCADE)  
     content = models.TextField()
-    slug = models.SlugField(unique=True, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
 
     def __str__(self):
         return f"Comment by {self.user.username} on {self.post.title}"
 
+
 class Like(models.Model):
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='likes')
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    rating = models.PositiveIntegerField(default=0)  # Optional rating
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="likes")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("user", "post")  # Prevent duplicate likes
+
+    def __str__(self):
+        return f"{self.user} likes {self.post.title}"
 
 class Subscription(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='subscribers', null=True, blank=True)
+    subscribed_to = models.ForeignKey(User, on_delete=models.CASCADE, related_name='subscribers', null=True, blank=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.user.username} subscribed to {self.subscribed_to.username if self.subscribed_to else self.category.name}"

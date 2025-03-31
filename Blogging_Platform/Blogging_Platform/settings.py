@@ -23,9 +23,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-_n43*va^(-1(_^brs2@@%t7!=921j$crnm0)d(2pfu75to(1sz'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
 
-ALLOWED_HOSTS = ['IjalusiMargaret.pythonanywhere.com']
+ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
+CSRF_TRUSTED_ORIGINS = [
+    "http://127.0.0.1",
+    "http://localhost"
+]
+
+#ALLOWED_HOSTS = ['IjalusiMargaret.pythonanywhere.com']
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 MEDIA_URL = '/media/'
@@ -164,3 +170,4 @@ REST_FRAMEWORK = {
         'rest_framework.filters.OrderingFilter',
     ],
 }
+DEBUG = True
